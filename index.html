@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Кот-повар</title>
+<meta name="description" content="Игра: гости заказывают блюда, а кот-повар кладёт в кастрюлю ровно то, что просили. Успей, пока гость не проголодался!">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M18 40 L24 10 L44 28 Z M82 40 L76 10 L56 28 Z' fill='%23f2a654' stroke='%233b2a20' stroke-width='5'/><ellipse cx='50' cy='58' rx='38' ry='32' fill='%23f2a654' stroke='%233b2a20' stroke-width='5'/><circle cx='38' cy='56' r='5' fill='%233b2a20'/><circle cx='62' cy='56' r='5' fill='%233b2a20'/></svg>">
+<style>
+  :root {
+    --bg: #fdf3e7;
+    --tile: #f4e4cf;
+    --text: #3b2a20;
+    --card: #ffffff;
+    --accent: #ff7a59;
+    --good: #3fae5a;
+    --bad: #e25555;
+    --line: #3b2a20;
+    --shadow: #d9c1a3;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; }
+  body {
+    font-family: "Trebuchet MS", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color: var(--text);
+    background-color: var(--bg);
+    background-image:
+      linear-gradient(45deg, var(--tile) 25%, transparent 25%, transparent 75%, var(--tile) 75%),
+      linear-gradient(45deg, var(--tile) 25%, transparent 25%, transparent 75%, var(--tile) 75%);
+    background-size: 48px 48px;
+    background-position: 0 0, 24px 24px;
+    min-height: 100vh;
+    user-select: none; -webkit-user-select: none;
+  }
+  .wrap { max-width: 480px; margin: 0 auto; padding: 12px 16px 24px; }
+  .screen { display: none; }
+  .screen.on { display: block; animation: fade .25s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(6px); } }
+
+  button { font-family: inherit; color: inherit; cursor: pointer; border: none; }
+  .big {
+    display: block; width: 100%; font-size: 22px; font-weight: bold;
+    padding: 16px; border-radius: 22px; background: var(--card);
+    box-shadow: 0 5px 0 var(--shadow); margin: 12px 0; transition: transform .08s;
+  }
+  .big small { display: block; font-size: 15px; font-weight: normal; opacity: .75; margin-top: 3px; }
+  .big:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--shadow); }
+  .big.go { background: linear-gradient(135deg, #ffb36b, #ff7a59); color: #fff; }
+  .big.calm { background: #bfe6b0; }
+  .pill { background: var(--card); padding: 7px 14px; border-radius: 20px; box-shadow: 0 3px 0 var(--shadow); font-size: 17px; white-space: nowrap; }
+  .back { background: var(--card); padding: 8px 14px; border-radius: 20px; box-shadow: 0 3px 0 var(--shadow); font-size: 17px; }
+
+  /* Меню */
+  #menu h1 { font-size: 48px; text-align: center; margin: 18px 0 0; letter-spacing: 1px; }
+  .hero { display: flex; justify-content: center; align-items: flex-end; gap: 4px; margin: 6px 0; }
+  .hero .cat { animation: bob 2s ease-in-out infinite; }
+  @keyframes bob { 50% { transform: translateY(-6px); } }
+  .lead { text-align: center; font-size: 18px; line-height: 1.4; margin: 6px 4px 8px; }
+  .record { text-align: center; font-size: 17px; opacity: .85; margin-top: 4px; }
+
+  /* Игра */
+  .topbar { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .stats { display: flex; gap: 8px; align-items: center; }
+  .hearts { display: flex; gap: 2px; }
+  .hearts svg { display: block; }
+  #soundBtn { background: var(--card); border-radius: 50%; width: 40px; height: 40px; box-shadow: 0 3px 0 var(--shadow); display: grid; place-items: center; }
+
+  .order { display: flex; gap: 10px; align-items: flex-start; margin: 14px 0 8px; }
+  .guest { width: 104px; flex: none; text-align: center; }
+  .guest .gname { font-size: 13px; margin-top: 2px; }
+  .guest.arrive { animation: arrive .45s ease; }
+  @keyframes arrive { from { transform: translateX(-60px); opacity: 0; } }
+  .guest.leave { animation: leave .4s ease forwards; }
+  @keyframes leave { to { transform: translateX(80px); opacity: 0; } }
+  .patience { height: 10px; border-radius: 6px; background: #ead6c0; overflow: hidden; margin-top: 4px; }
+  .patience i { display: block; height: 100%; width: 100%; background: var(--good); border-radius: 6px; transition: width .1s linear, background .3s; }
+  .bubble {
+    flex: 1; background: var(--card); border-radius: 20px; padding: 10px 12px 8px;
+    box-shadow: 0 4px 0 var(--shadow); position: relative; min-height: 96px;
+  }
+  .bubble::before { content: ""; position: absolute; left: -10px; top: 26px; border: 10px solid transparent; border-right-color: var(--card); border-left: 0; }
+  .bubble .say { font-size: 18px; font-weight: bold; margin-bottom: 4px; }
+  .need { display: flex; flex-wrap: wrap; gap: 4px 10px; }
+  .need .it { display: flex; align-items: center; font-size: 20px; font-weight: bold; gap: 2px; border-radius: 12px; padding: 0 4px; transition: background .2s; }
+  .need .it.ok { background: #d8f2cf; }
+  .need .it.over { background: #ffd6d6; }
+  .need .no { position: relative; width: 40px; height: 40px; }
+  .need .ban-lbl { font-size: 16px; font-weight: bold; color: var(--bad); }
+
+  .kitchen { position: relative; display: flex; align-items: flex-end; margin-top: 4px; }
+  .kitchen .cat { width: 96px; flex: none; margin-right: -14px; z-index: 2; position: relative; }
+  .cat .spoon { transform-origin: 150px 150px; animation: stir .6s ease-in-out infinite alternate; }
+  @keyframes stir { from { transform: rotate(-10deg); } to { transform: rotate(10deg); } }
+  .pot { position: relative; flex: 1; }
+  .pot .vessel { display: block; }
+  .contents {
+    position: absolute; left: 14%; right: 14%; bottom: 66%;
+    display: flex; flex-wrap: wrap-reverse; justify-content: center; align-content: flex-start; gap: 0 2px;
+  }
+  .contents button { background: none; padding: 0; margin: 0 -3px -10px; animation: drop .3s ease; }
+  .contents button svg { display: block; }
+  @keyframes drop { from { transform: translateY(-30px) scale(1.3); opacity: 0; } }
+  .pot.splash .vessel { animation: shake .35s; }
+  @keyframes shake { 25% { transform: rotate(-2deg); } 75% { transform: rotate(2deg); } }
+  .bubbles circle { animation: boil 1.4s ease-in infinite; }
+  .bubbles circle:nth-child(2) { animation-delay: .5s; }
+  .bubbles circle:nth-child(3) { animation-delay: .9s; }
+  @keyframes boil { from { transform: translateY(0); opacity: .8; } to { transform: translateY(-26px); opacity: 0; } }
+  .hint { text-align: center; font-size: 14px; opacity: .7; margin: 6px 0 2px; min-height: 18px; }
+
+  .shelf {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+    background: #c8935f; border: 4px solid var(--line); border-radius: 18px; padding: 10px; margin-top: 6px;
+    box-shadow: inset 0 -6px 0 #a87442;
+  }
+  .shelf button {
+    background: #fff8ee; border-radius: 14px; padding: 4px 2px 2px; box-shadow: 0 4px 0 #8f6236;
+    display: flex; flex-direction: column; align-items: center; font-size: 12px; transition: transform .08s;
+  }
+  .shelf button:active { transform: translateY(3px) scale(.96); box-shadow: 0 1px 0 #8f6236; }
+  .actions { display: grid; grid-template-columns: 1fr 1.4fr; gap: 10px; }
+  .actions .big { margin: 14px 0 0; }
+  .serve { background: var(--good); color: #fff; }
+
+  .flyer { position: fixed; z-index: 50; pointer-events: none; }
+
+  .toast {
+    position: fixed; left: 50%; top: 40%; transform: translate(-50%, -50%) scale(.8);
+    background: var(--card); border: 4px solid var(--line); border-radius: 24px; padding: 18px 20px;
+    width: min(90vw, 400px); text-align: center; font-size: 20px; z-index: 60;
+    opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s;
+  }
+  .toast.on { opacity: 1; transform: translate(-50%, -50%) scale(1); pointer-events: auto; }
+  .toast b { display: block; font-size: 26px; margin-bottom: 6px; }
+  .toast.good b { color: var(--good); }
+  .toast.bad b { color: var(--bad); }
+  .toast .small { font-size: 16px; line-height: 1.45; }
+
+  /* Конец */
+  #over { text-align: center; }
+  #over h2 { font-size: 34px; margin: 24px 0 4px; }
+  #over .res { font-size: 22px; line-height: 1.6; margin: 10px 0; }
+  .rank { display: inline-block; background: #ffe08a; padding: 6px 16px; border-radius: 16px; font-weight: bold; }
+
+  .confetti { position: fixed; top: -20px; width: 10px; height: 14px; z-index: 55; pointer-events: none; animation: fall 1.4s ease-in forwards; }
+  @keyframes fall { to { transform: translateY(105vh) rotate(540deg); } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<section class="screen on" id="menu">
+  <h1>Кот-повар</h1>
+  <div class="hero"><div class="cat" id="menuCat"></div><div id="menuGuest"></div></div>
+  <p class="lead">Гости приходят голодные и заказывают блюда. Положи в кастрюлю <b>ровно то, что просят</b> — не больше и не меньше!</p>
+  <button class="big go" data-mode="timed">На время<small>Гость ждёт недолго, ошибаться можно 3 раза</small></button>
+  <button class="big calm" data-mode="calm">Спокойно<small>Без таймера, ошибки можно исправить</small></button>
+  <div class="record" id="record"></div>
+</section>
+
+<section class="screen" id="game">
+  <div class="topbar">
+    <button class="back" id="toMenu">← Меню</button>
+    <span class="pill" id="orderNo">Заказ №1</span>
+    <div class="stats">
+      <span class="pill" id="coins"></span>
+      <button id="soundBtn" aria-label="Звук"></button>
+    </div>
+  </div>
+  <div class="hearts" id="hearts" style="justify-content:center;margin-top:8px"></div>
+
+  <div class="order">
+    <div class="guest" id="guest"></div>
+    <div class="bubble">
+      <div class="say" id="say"></div>
+      <div class="need" id="need"></div>
+    </div>
+  </div>
+
+  <div class="kitchen">
+    <div class="cat" id="cookCat"></div>
+    <div class="pot" id="pot"><div class="vessel" id="vessel"></div><div class="contents" id="contents"></div></div>
+  </div>
+  <div class="hint" id="hint">Нажимай на продукты на полке</div>
+
+  <div class="shelf" id="shelf"></div>
+  <div class="actions">
+    <button class="big" id="pourBtn">Вылить</button>
+    <button class="big serve" id="serveBtn">Подать!</button>
+  </div>
+</section>
+
+<section class="screen" id="over">
+  <h2>Смена окончена!</h2>
+  <div id="overCat"></div>
+  <div class="res" id="overRes"></div>
+  <button class="big go" id="againBtn">Ещё смену</button>
+  <button class="big" id="overMenu">В меню</button>
+</section>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="art.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+const rnd = (n) => Math.floor(Math.random() * n);
+const pick = (a) => a[rnd(a.length)];
+const shuffle = (a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+};
+const RANKS = ['Поварёнок', 'Помощник повара', 'Повар', 'Шеф-повар', 'Главный шеф', 'Кот-легенда'];
+const rankOf = (served) => RANKS[Math.min(RANKS.length - 1, Math.floor(served / 5))];
+
+// ---------- Звук (короткие пиканья, без файлов) ----------
+let actx = null, soundOn = store.get('catchef.sound', true);
+function tone(freq, dur, type = 'sine', delay = 0, vol = 0.15) {
+  if (!soundOn) return;
+  try {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    const t = actx.currentTime + delay, o = actx.createOscillator(), g = actx.createGain();
+    o.type = type; o.frequency.setValueAtTime(freq, t);
+    g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    o.connect(g); g.connect(actx.destination); o.start(t); o.stop(t + dur);
+  } catch {}
+}
+const sfx = {
+  plop() { tone(320, .12, 'sine'); tone(620, .1, 'sine', .05, .1); },
+  out() { tone(500, .1, 'triangle'); tone(260, .12, 'triangle', .06, .1); },
+  pour() { for (let i = 0; i < 5; i++) tone(700 - i * 90, .1, 'triangle', i * .05, .08); },
+  win() { [523, 659, 784, 1046].forEach((f, i) => tone(f, .18, 'triangle', i * .09)); },
+  fail() { tone(220, .25, 'sawtooth', 0, .08); tone(165, .35, 'sawtooth', .18, .08); },
+  tick() { tone(900, .05, 'square', 0, .04); },
+};
+function drawSound() { $('soundBtn').innerHTML = ICON.sound(soundOn); }
+$('soundBtn').onclick = () => { soundOn = !soundOn; store.set('catchef.sound', soundOn); drawSound(); };
+
+// ---------- Экраны ----------
+function show(id) { document.querySelectorAll('.screen').forEach(s => s.classList.toggle('on', s.id === id)); }
+function drawMenu() {
+  $('menuCat').innerHTML = catSvg('happy', 150);
+  $('menuGuest').innerHTML = guestSvg(pick(GUESTS), 'happy', 100);
+  const best = store.get('catchef.best', 0);
+  $('record').innerHTML = best ? `Рекорд «На время»: ${best} заказов · звание «${rankOf(best)}»` : '';
+  show('menu');
+}
+
+// ---------- Игра ----------
+let S = null; // состояние смены
+let timer = null;
+
+function startShift(mode) {
+  S = { mode, n: 0, coins: 0, hearts: 3, served: 0, lastGuest: null };
+  drawSound();
+  show('game');
+  nextOrder();
+}
+
+function makeOrder(n) {
+  const fruit = n > 1 && Math.random() < 0.3;
+  const pool = Object.keys(FOOD).filter(id => FOOD[id].kind === (fruit ? 'fruit' : 'veg'));
+  const types = Math.min(1 + Math.ceil(n / 2), fruit ? 4 : 5);
+  const maxQ = n < 3 ? 1 : n < 6 ? 2 : 3;
+  const chosen = shuffle(pool).slice(0, types);
+  const need = {};
+  chosen.forEach(id => need[id] = 1 + rnd(maxQ));
+  let dish, bowl = false;
+  if (fruit) { dish = pick(['компот', 'фруктовый салат', 'варенье']); bowl = dish === 'фруктовый салат'; }
+  else if (need.beet) dish = 'борщ';
+  else { dish = pick(['суп', 'салат', 'рагу', 'щи']); bowl = dish === 'салат'; }
+  const others = shuffle(Object.keys(FOOD).filter(id => !need[id]));
+  let ban = null;
+  if (n >= 4 && Math.random() < 0.6) ban = others.shift();
+  const shelfSize = Math.min(4 + Math.floor(n / 2), 12);
+  const shelf = Object.keys(need);
+  if (ban) shelf.push(ban);
+  while (shelf.length < shelfSize && others.length) shelf.push(others.shift());
+  const total = Object.values(need).reduce((a, b) => a + b, 0);
+  const time = Math.max(12, 30 - n) + total * 1.5;
+  let g; do { g = pick(GUESTS); } while (g === S.lastGuest);
+  S.lastGuest = g;
+  return { need, ban, dish, bowl, shelf: shuffle(shelf), time, guest: g };
+}
+
+function nextOrder() {
+  S.n++;
+  S.order = makeOrder(S.n);
+  S.pot = [];
+  S.left = S.order.time;
+  S.busy = false;
+  const o = S.order;
+  $('orderNo').textContent = `Заказ №${S.n}`;
+  $('say').textContent = `${o.bowl ? 'Приготовь' : 'Свари'} мне ${o.dish}!`;
+  $('vessel').innerHTML = o.bowl ? bowlSvg() : potSvg(o.dish === 'борщ' ? '#d0405f' : o.dish === 'компот' || o.dish === 'варенье' ? '#f08aa0' : '#f6c35b');
+  $('contents').style.bottom = o.bowl ? '60%' : '66%';
+  $('cookCat').innerHTML = catSvg('cook', 96);
+  $('shelf').innerHTML = '';
+  o.shelf.forEach(id => {
+    const b = document.createElement('button');
+    b.innerHTML = foodSvg(id, 52) + `<span>${FOOD[id].name}</span>`;
+    b.onclick = () => addFood(id, b);
+    $('shelf').appendChild(b);
+  });
+  $('hint').textContent = S.n === 1 ? 'Нажимай на продукты на полке' : '';
+  drawGuest('calm', true);
+  drawNeed(); drawPot(); drawStats();
+  clearInterval(timer);
+  if (S.mode === 'timed') {
+    $('guest').querySelector('.patience').style.display = '';
+    timer = setInterval(tickTime, 100);
+  }
+}
+
+function drawGuest(mood, arrive) {
+  const g = S.order.guest, el = $('guest');
+  const bar = S.mode === 'timed' ? `<div class="patience"><i></i></div>` : '';
+  el.innerHTML = guestSvg(g, mood, 104) + `<div class="gname">${g.name}</div>` + bar;
+  el.classList.remove('arrive', 'leave');
+  if (arrive) { void el.offsetWidth; el.classList.add('arrive'); }
+  S.mood = mood;
+  updateBar();
+}
+function updateBar() {
+  const i = $('guest').querySelector('.patience i');
+  if (!i) return;
+  const k = Math.max(0, S.left / S.order.time);
+  i.style.width = (k * 100) + '%';
+  i.style.background = k > .5 ? 'var(--good)' : k > .25 ? '#f0b429' : 'var(--bad)';
+}
+function tickTime() {
+  if (S.busy) return;
+  S.left -= 0.1;
+  const k = S.left / S.order.time;
+  const mood = k > .5 ? 'calm' : k > .25 ? 'worried' : 'angry';
+  if (mood !== S.mood) drawGuest(mood);
+  else updateBar();
+  if (k < .25 && Math.round(S.left * 10) % 10 === 0) sfx.tick();
+  if (S.left <= 0) {
+    clearInterval(timer);
+    failOrder('Гость ушёл голодным!', 'Не успели приготовить вовремя.');
+  }
+}
+
+function counts() { const c = {}; S.pot.forEach(id => c[id] = (c[id] || 0) + 1); return c; }
+
+function drawNeed() {
+  const o = S.order, c = counts();
+  let h = Object.entries(o.need).map(([id, q]) => {
+    const have = c[id] || 0;
+    const cls = have === q ? 'ok' : have > q ? 'over' : '';
+    return `<span class="it ${cls}">${foodSvg(id, 38)}×${q}</span>`;
+  }).join('');
+  if (o.ban) h += `<span class="it ${c[o.ban] ? 'over' : ''}"><span class="ban-lbl">без</span><span class="no">${foodSvg(o.ban, 40)}${ICON.ban}</span></span>`;
+  $('need').innerHTML = h;
+}
+function drawPot() {
+  const box = $('contents');
+  box.innerHTML = '';
+  const size = S.pot.length > 10 ? 30 : 38;
+  S.pot.forEach((id, idx) => {
+    const b = document.createElement('button');
+    b.innerHTML = foodSvg(id, size);
+    b.style.animation = idx === S.pot.length - 1 && S.justAdded ? '' : 'none';
+    b.onclick = () => { if (S.busy) return; S.pot.splice(idx, 1); S.justAdded = false; sfx.out(); drawPot(); drawNeed(); };
+    box.appendChild(b);
+  });
+  S.justAdded = false;
+}
+function drawStats() {
+  $('coins').innerHTML = ICON.coin() + ' ' + S.coins;
+  $('hearts').innerHTML = S.mode === 'timed' ? [0, 1, 2].map(i => ICON.heart(i < S.hearts)).join('') : '';
+  $('hearts').style.display = S.mode === 'timed' ? 'flex' : 'none';
+}
+
+function addFood(id, btn) {
+  if (S.busy) return;
+  if (S.pot.length >= 16) { $('hint').textContent = 'Кастрюля полная!'; return; }
+  sfx.plop();
+  // летящий продукт
+  const from = btn.getBoundingClientRect(), to = $('pot').getBoundingClientRect();
+  const f = document.createElement('div');
+  f.className = 'flyer'; f.innerHTML = foodSvg(id, 52);
+  f.style.left = from.left + from.width / 2 - 26 + 'px'; f.style.top = from.top + 4 + 'px';
+  document.body.appendChild(f);
+  const dx = to.left + to.width / 2 - (from.left + from.width / 2), dy = to.top + 20 - from.top;
+  const anim = f.animate([
+    { transform: 'translate(0,0) scale(1)' },
+    { transform: `translate(${dx / 2}px, ${dy - 60}px) scale(1.1) rotate(90deg)`, offset: .5 },
+    { transform: `translate(${dx}px, ${dy}px) scale(.6) rotate(200deg)` },
+  ], { duration: 380, easing: 'ease-in' });
+  anim.onfinish = () => f.remove();
+  setTimeout(() => {
+    S.pot.push(id); S.justAdded = true;
+    $('pot').classList.remove('splash'); void $('pot').offsetWidth; $('pot').classList.add('splash');
+    drawPot(); drawNeed();
+    if (S.n === 1 && S.pot.length === 1) $('hint').textContent = 'Лишнее? Нажми на продукт в кастрюле — кот его достанет';
+  }, 300);
+}
+
+$('pourBtn').onclick = () => {
+  if (S.busy || !S.pot.length) return;
+  sfx.pour(); S.pot = []; drawPot(); drawNeed();
+};
+
+function listText(obj) { return Object.entries(obj).map(([id, q]) => `${FOOD[id].name} ×${q}`).join(', '); }
+
+$('serveBtn').onclick = () => {
+  if (S.busy) return;
+  if (!S.pot.length) { $('hint').textContent = 'Кастрюля пустая — сначала положи продукты'; return; }
+  const c = counts(), o = S.order, missing = {}, extra = {};
+  for (const [id, q] of Object.entries(o.need)) if ((c[id] || 0) < q) missing[id] = q - (c[id] || 0);
+  for (const [id, q] of Object.entries(c)) if (q > (o.need[id] || 0)) extra[id] = q - (o.need[id] || 0);
+  let why = '';
+  if (Object.keys(missing).length) why += `Не хватает: ${listText(missing)}.<br>`;
+  if (Object.keys(extra).length) why += `Лишнее: ${listText(extra)}.`;
+  if (o.ban && c[o.ban]) why = `Я же просил без продукта «${FOOD[o.ban].name}»!<br>` + why;
+  if (!why) winOrder();
+  else if (S.mode === 'calm') {
+    sfx.fail(); drawGuest('worried');
+    toast('bad', 'Не совсем то…', why + '<br>Исправь и подай ещё раз!', 2600);
+  } else failOrder('Не то блюдо!', why);
+};
+
+function winOrder() {
+  S.busy = true; clearInterval(timer);
+  const types = Object.keys(S.order.need).length;
+  const bonus = S.mode === 'timed' ? Math.ceil(S.left / 2) : 0;
+  const gain = 10 + types * 2 + bonus;
+  const oldRank = rankOf(S.served);
+  S.coins += gain; S.served++;
+  sfx.win(); confetti();
+  drawGuest('happy'); $('cookCat').innerHTML = catSvg('happy', 96); drawStats();
+  const newRank = rankOf(S.served);
+  const rankMsg = newRank !== oldRank ? `<br><span class="rank">Новое звание: ${newRank}!</span>` : '';
+  toast('good', 'Вкуснятина!', `${ICON.coin()} +${gain}${bonus ? ` (из них ${bonus} — за скорость)` : ''}${rankMsg}`, rankMsg ? 2200 : 1400, leaveAndNext);
+}
+
+function failOrder(title, why) {
+  S.busy = true; clearInterval(timer);
+  S.hearts--;
+  sfx.fail();
+  drawGuest('angry'); $('cookCat').innerHTML = catSvg('sad', 96); drawStats();
+  toast('bad', title, why, 2400, () => { if (S.hearts <= 0) gameOver(); else leaveAndNext(); });
+}
+
+function leaveAndNext() {
+  $('guest').classList.add('leave');
+  setTimeout(nextOrder, 380);
+}
+
+function gameOver() {
+  const best = store.get('catchef.best', 0), isBest = S.served > best;
+  if (isBest) store.set('catchef.best', S.served);
+  $('overCat').innerHTML = catSvg(S.served ? 'happy' : 'sad', 160);
+  $('overRes').innerHTML = `Накормлено гостей: <b>${S.served}</b><br>${ICON.coin(26)} Монет: <b>${S.coins}</b><br>
+    <span class="rank">${rankOf(S.served)}</span>${isBest && S.served ? '<br>Новый рекорд!' : ''}`;
+  show('over');
+  if (isBest && S.served) confetti();
+}
+
+let toastTimer = null;
+function toast(kind, title, text, ms, then) {
+  const t = $('toast');
+  t.className = 'toast on ' + kind;
+  t.innerHTML = `<b>${title}</b><div class="small">${text}</div>`;
+  clearTimeout(toastTimer);
+  const close = () => { clearTimeout(toastTimer); t.className = 'toast'; t.onclick = null; if (then) { const f = then; then = null; f(); } };
+  t.onclick = close;
+  toastTimer = setTimeout(close, ms);
+}
+
+function confetti() {
+  const colors = ['#ff7a59', '#ffc83d', '#3fae5a', '#4d9de0', '#c86bd6'];
+  for (let i = 0; i < 40; i++) {
+    const d = document.createElement('div');
+    d.className = 'confetti';
+    d.style.left = Math.random() * 100 + 'vw';
+    d.style.background = pick(colors);
+    d.style.animationDelay = Math.random() * .4 + 's';
+    d.style.animationDuration = 1 + Math.random() * .8 + 's';
+    document.body.appendChild(d);
+    setTimeout(() => d.remove(), 2400);
+  }
+}
+
+// ---------- Кнопки ----------
+document.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => startShift(b.dataset.mode));
+$('toMenu').onclick = () => {
+  clearInterval(timer);
+  if (S && S.mode === 'timed' && S.served) gameOver(); else drawMenu();
+};
+$('againBtn').onclick = () => startShift(S.mode);
+$('overMenu').onclick = drawMenu;
+
+drawMenu();
+</script>
+</body>
+</html>
