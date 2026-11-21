@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Кот-повар</title>
+<meta name="description" content="Пиксельная игра: кот-повар достаёт продукты из холодильника, режет, варит и подаёт гостям ровно то, что они заказали.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'><path fill='%232b1a2e' d='M1 1h1v1h1v1h2V2h1V1h1v6H1z'/><path fill='%23ff8c1a' d='M2 3h4v3H2z'/><path fill='%232b1a2e' d='M3 4h1v1H3zM5 4h1v1H5z'/></svg>">
+<style>
+  html, body { margin: 0; height: 100%; background: #2b1a2e; overflow: hidden; }
+  body { display: grid; place-items: center; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
+  canvas { display: block; image-rendering: pixelated; image-rendering: crisp-edges; touch-action: none; cursor: pointer; }
+</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+<script src="font.js"></script>
+<script src="sprites.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
