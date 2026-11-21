@@ -1,0 +1,724 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Кот-повар</title>
+<meta name="description" content="Игра: гости заказывают блюда, а кот-повар кладёт в кастрюлю ровно то, что просили. Успей, пока гость не проголодался!">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M16 42 L22 8 L46 28 Z M84 42 L78 8 L54 28 Z' fill='%23ff8a1f' stroke='%23141414' stroke-width='6' stroke-linejoin='round'/><ellipse cx='50' cy='60' rx='40' ry='33' fill='%23ff8a1f' stroke='%23141414' stroke-width='6'/><circle cx='37' cy='57' r='7' fill='%23fff' stroke='%23141414' stroke-width='3'/><circle cx='63' cy='57' r='7' fill='%23fff' stroke='%23141414' stroke-width='3'/><circle cx='39' cy='58' r='3.5' fill='%23141414'/><circle cx='65' cy='58' r='3.5' fill='%23141414'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Neucha&family=Rubik+Mono+One&family=Russo+One&display=swap" rel="stylesheet">
+<style>
+  /* ===== Стиль «КОМИКС»: поп-арт, жирные чернила, точки Бен-Дея ===== */
+  :root {
+    --ink: #141414;
+    --red: #e8212b;
+    --yellow: #ffd400;
+    --cyan: #00a8e8;
+    --blue: #1e63d6;
+    --paper: #fffbea;
+    --text: #141414;
+    --card: #ffffff;
+    --good: #1fb84a;
+    --bad: #e8212b;
+    --line: #141414;
+    --f-title: "Rubik Mono One", "Russo One", Impact, sans-serif;
+    --f-head: "Russo One", Impact, "Arial Black", sans-serif;
+    --f-body: "Neucha", "Comic Sans MS", "Trebuchet MS", cursive;
+--burst-y: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -2 112 108' preserveAspectRatio='none'%3E%3Cpolygon points='50.0,7.8 58.0,20.3 75.0,6.8 75.3,24.7 88.2,27.9 80.9,41.7 101.8,50.0 77.2,57.3 89.9,73.0 73.5,73.5 76.9,96.6 57.6,78.4 50.0,98.0 41.1,83.4 28.9,86.6 28.3,71.7 6.8,75.0 15.4,59.3 5.8,50.0 19.1,41.7 5.1,24.1 30.1,30.1 27.0,10.1 41.4,17.9' transform='translate(4 4)' fill='%23141414'/%3E%3Cpolygon points='50.0,7.8 58.0,20.3 75.0,6.8 75.3,24.7 88.2,27.9 80.9,41.7 101.8,50.0 77.2,57.3 89.9,73.0 73.5,73.5 76.9,96.6 57.6,78.4 50.0,98.0 41.1,83.4 28.9,86.6 28.3,71.7 6.8,75.0 15.4,59.3 5.8,50.0 19.1,41.7 5.1,24.1 30.1,30.1 27.0,10.1 41.4,17.9' fill='%23ffd400' stroke='%23141414' stroke-width='3.5' stroke-linejoin='round'/%3E%3C/svg%3E");
+--burst-r: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -2 112 108' preserveAspectRatio='none'%3E%3Cpolygon points='50.0,7.8 58.0,20.3 75.0,6.8 75.3,24.7 88.2,27.9 80.9,41.7 101.8,50.0 77.2,57.3 89.9,73.0 73.5,73.5 76.9,96.6 57.6,78.4 50.0,98.0 41.1,83.4 28.9,86.6 28.3,71.7 6.8,75.0 15.4,59.3 5.8,50.0 19.1,41.7 5.1,24.1 30.1,30.1 27.0,10.1 41.4,17.9' transform='translate(4 4)' fill='%23141414'/%3E%3Cpolygon points='50.0,7.8 58.0,20.3 75.0,6.8 75.3,24.7 88.2,27.9 80.9,41.7 101.8,50.0 77.2,57.3 89.9,73.0 73.5,73.5 76.9,96.6 57.6,78.4 50.0,98.0 41.1,83.4 28.9,86.6 28.3,71.7 6.8,75.0 15.4,59.3 5.8,50.0 19.1,41.7 5.1,24.1 30.1,30.1 27.0,10.1 41.4,17.9' fill='%23e8212b' stroke='%23141414' stroke-width='3.5' stroke-linejoin='round'/%3E%3C/svg%3E");
+--burst-c: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -2 112 108' preserveAspectRatio='none'%3E%3Cpolygon points='50.0,7.8 58.0,20.3 75.0,6.8 75.3,24.7 88.2,27.9 80.9,41.7 101.8,50.0 77.2,57.3 89.9,73.0 73.5,73.5 76.9,96.6 57.6,78.4 50.0,98.0 41.1,83.4 28.9,86.6 28.3,71.7 6.8,75.0 15.4,59.3 5.8,50.0 19.1,41.7 5.1,24.1 30.1,30.1 27.0,10.1 41.4,17.9' transform='translate(4 4)' fill='%23141414'/%3E%3Cpolygon points='50.0,7.8 58.0,20.3 75.0,6.8 75.3,24.7 88.2,27.9 80.9,41.7 101.8,50.0 77.2,57.3 89.9,73.0 73.5,73.5 76.9,96.6 57.6,78.4 50.0,98.0 41.1,83.4 28.9,86.6 28.3,71.7 6.8,75.0 15.4,59.3 5.8,50.0 19.1,41.7 5.1,24.1 30.1,30.1 27.0,10.1 41.4,17.9' fill='%2300a8e8' stroke='%23141414' stroke-width='3.5' stroke-linejoin='round'/%3E%3C/svg%3E");
+--burst-w: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -2 112 108' preserveAspectRatio='none'%3E%3Cpolygon points='50.0,7.8 58.0,20.3 75.0,6.8 75.3,24.7 88.2,27.9 80.9,41.7 101.8,50.0 77.2,57.3 89.9,73.0 73.5,73.5 76.9,96.6 57.6,78.4 50.0,98.0 41.1,83.4 28.9,86.6 28.3,71.7 6.8,75.0 15.4,59.3 5.8,50.0 19.1,41.7 5.1,24.1 30.1,30.1 27.0,10.1 41.4,17.9' transform='translate(4 4)' fill='%23141414'/%3E%3Cpolygon points='50.0,7.8 58.0,20.3 75.0,6.8 75.3,24.7 88.2,27.9 80.9,41.7 101.8,50.0 77.2,57.3 89.9,73.0 73.5,73.5 76.9,96.6 57.6,78.4 50.0,98.0 41.1,83.4 28.9,86.6 28.3,71.7 6.8,75.0 15.4,59.3 5.8,50.0 19.1,41.7 5.1,24.1 30.1,30.1 27.0,10.1 41.4,17.9' fill='%23ffffff' stroke='%23141414' stroke-width='3.5' stroke-linejoin='round'/%3E%3C/svg%3E");
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; }
+  body {
+    font-family: var(--f-body);
+    font-size: 18px;
+    color: var(--text);
+    background-color: var(--yellow);
+    /* точки Бен-Дея: красные по жёлтому */
+    background-image:
+      radial-gradient(circle, rgba(232,33,43,.38) 0 1.9px, transparent 2.4px),
+      radial-gradient(circle, rgba(232,33,43,.38) 0 1.9px, transparent 2.4px);
+    background-size: 12px 12px;
+    background-position: 0 0, 6px 6px;
+    min-height: 100vh;
+    overflow-x: hidden;
+    user-select: none; -webkit-user-select: none;
+  }
+  /* лучи «взрыва» за всей страницей */
+  body::before {
+    content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background: repeating-conic-gradient(from 0deg at 50% 20%, rgba(255,255,255,.34) 0 7deg, transparent 7deg 15deg);
+  }
+  .wrap { max-width: 480px; margin: 0 auto; padding: 12px 14px 28px; }
+  .screen { display: none; }
+  .screen.on { display: block; animation: zap .3s cubic-bezier(.3,1.5,.5,1); }
+  @keyframes zap { from { opacity: 0; transform: scale(.94) rotate(-1deg); } }
+
+  /* ---- звуковые надписи-взрывы ---- */
+  .fx {
+    position: absolute; z-index: 4; pointer-events: none; white-space: nowrap; line-height: 1;
+    font-family: var(--f-title); font-size: 17px; color: var(--red);
+    -webkit-text-stroke: 1.6px var(--ink); paint-order: stroke fill;
+    text-shadow: 2px 2px 0 var(--ink);
+    background: var(--burst-y) center / 100% 100% no-repeat;
+    padding: 20px 17px 19px 15px;
+  }
+  .fx.c { background-image: var(--burst-c); color: #fff; }
+  .fx.r { background-image: var(--burst-r); color: var(--yellow); }
+  .fx.w { background-image: var(--burst-w); }
+
+  button { font-family: inherit; color: inherit; cursor: pointer; border: none; }
+  .big {
+    position: relative; display: block; width: 100%;
+    font-family: var(--f-head); font-size: 22px; text-transform: uppercase; letter-spacing: .5px; line-height: 1.1;
+    padding: 14px 16px 12px; margin: 14px 0;
+    background: var(--card); color: var(--ink);
+    border: 4px solid var(--ink); border-radius: 5px 14px 7px 12px / 12px 5px 14px 7px;
+    box-shadow: 6px 6px 0 var(--ink);
+    transform: skew(-5deg) rotate(-.7deg);
+    transition: transform .08s, box-shadow .08s;
+  }
+  .big small { display: block; font-family: var(--f-body); font-size: 17px; text-transform: none; letter-spacing: 0; margin-top: 5px; font-weight: normal; }
+  .big:active { transform: skew(-5deg) translate(4px, 4px); box-shadow: 2px 2px 0 var(--ink); }
+  .big.go {
+    color: #fff; text-shadow: 2px 2px 0 var(--ink);
+    background: radial-gradient(circle, rgba(255,255,255,.28) 0 1.6px, transparent 2.1px) 0 0 / 8px 8px, var(--red);
+  }
+  .big.go small { text-shadow: none; }
+  .big.go::after {
+    content: "БАМ!"; position: absolute; right: -14px; top: -24px; transform: rotate(14deg) skew(5deg);
+    font-family: var(--f-title); font-size: 14px; line-height: 1; color: var(--red); text-shadow: none;
+    -webkit-text-stroke: 1.2px var(--ink); paint-order: stroke fill;
+    background: var(--burst-y) center / 100% 100% no-repeat; padding: 16px 14px 15px 12px;
+  }
+  .big.calm {
+    transform: skew(-5deg) rotate(.6deg);
+    background: radial-gradient(circle, rgba(255,255,255,.35) 0 1.6px, transparent 2.1px) 0 0 / 8px 8px, var(--cyan);
+  }
+  .big.calm:active { transform: skew(-5deg) translate(4px, 4px); }
+  .pill {
+    display: inline-block; background: var(--card); padding: 6px 12px 5px; white-space: nowrap;
+    font-family: var(--f-head); font-size: 16px; text-transform: uppercase;
+    border: 3px solid var(--ink); border-radius: 4px; box-shadow: 3px 3px 0 var(--ink);
+    transform: skew(-6deg);
+  }
+  .back {
+    background: var(--yellow); padding: 7px 12px 6px; font-family: var(--f-head); font-size: 15px; text-transform: uppercase;
+    border: 3px solid var(--ink); border-radius: 4px; box-shadow: 3px 3px 0 var(--ink); transform: skew(-6deg) rotate(-2deg);
+  }
+  .back:active, #soundBtn:active { box-shadow: 1px 1px 0 var(--ink); translate: 2px 2px; }
+
+  /* ---- комикс-панели со скосом ---- */
+  .panel { position: relative; filter: drop-shadow(6px 6px 0 var(--ink)); margin: 14px 0 0; }
+  .panel > .pf { background: var(--ink); padding: 4px 5px 5px 4px; clip-path: var(--cut); }
+  .panel > .pf > .pi { position: relative; clip-path: var(--cut); }
+  .p-hero { --cut: polygon(0 3%, 100% 0, 99% 100%, 1% 96%); margin-top: 6px; }
+  .p-hero .pi {
+    background:
+      radial-gradient(circle, rgba(30,99,214,.35) 0 2px, transparent 2.5px) 0 0 / 10px 10px,
+      repeating-conic-gradient(from 0deg at 35% 60%, #7fdcff 0 8deg, #4cc8f5 8deg 16deg);
+    padding: 16px 8px 6px;
+  }
+  .p-order { --cut: polygon(0 4%, 100% 0, 99.4% 100%, .4% 95%); }
+  .p-order .pi {
+    background: radial-gradient(circle, rgba(255,255,255,.55) 0 1.8px, transparent 2.3px) 0 0 / 9px 9px, #57cdf7;
+    padding: 12px 10px 10px 8px;
+  }
+  .p-kitchen { --cut: polygon(.6% 0, 100% 2.5%, 99.5% 100%, 0 98%); }
+  .p-kitchen .pi {
+    background:
+      radial-gradient(circle, rgba(232,33,43,.22) 0 1.7px, transparent 2.2px) 0 0 / 9px 9px,
+      repeating-conic-gradient(from 0deg at 62% 70%, #fffdf0 0 7deg, #ffe98a 7deg 14deg);
+    padding: 26px 8px 8px 4px;
+  }
+
+  /* ---- Меню ---- */
+  .title { position: relative; text-align: center; margin: 10px 0 0; padding: 26px 0 22px; }
+  .title::before {
+    content: ""; position: absolute; left: 50%; top: 50%; width: 112%; height: 150%;
+    transform: translate(-50%, -50%) rotate(-3deg); z-index: -1;
+    background: var(--burst-r) center / 100% 100% no-repeat;
+  }
+  #menu h1 {
+    font-family: var(--f-title); font-size: 42px; line-height: 1; margin: 0; letter-spacing: 0;
+    color: var(--yellow); -webkit-text-stroke: 3px var(--ink); paint-order: stroke fill;
+    text-shadow: 4px 4px 0 var(--ink);
+    transform: rotate(-4deg) skew(-8deg);
+  }
+  .title .tag {
+    display: inline-block; margin-top: 10px; transform: rotate(-4deg) skew(-8deg);
+    font-family: var(--f-head); font-size: 13px; letter-spacing: 2px; text-transform: uppercase;
+    background: var(--ink); color: var(--yellow); padding: 3px 10px;
+  }
+  .hero { display: flex; justify-content: center; align-items: flex-end; gap: 0; margin: 0; }
+  .hero .cat { animation: bob 2s ease-in-out infinite; }
+  @keyframes bob { 50% { transform: translateY(-6px); } }
+  .p-hero .fx.v { left: 6px; top: 8px; transform: rotate(-14deg); }
+  .p-hero .fx.h { right: 6px; top: 10px; transform: rotate(10deg); font-size: 14px; padding: 17px 14px 16px 12px; }
+  .lead {
+    position: relative; text-align: center; font-size: 19px; line-height: 1.3; margin: 18px 4px 6px; padding: 10px 14px;
+    background: var(--paper); border: 3px solid var(--ink); box-shadow: 4px 4px 0 var(--ink); transform: rotate(-.8deg);
+  }
+  .lead b { font-family: var(--f-head); font-weight: normal; font-size: 16px; text-transform: uppercase; background: var(--yellow); padding: 0 3px; }
+  .record {
+    text-align: center; font-family: var(--f-head); font-size: 14px; text-transform: uppercase; margin: 22px auto 0;
+    background: var(--ink); color: var(--yellow); padding: 6px 10px; transform: skew(-6deg); width: fit-content; max-width: 100%;
+  }
+  .record:empty { display: none; }
+
+  /* ---- Игра ---- */
+  .topbar { display: flex; justify-content: space-between; align-items: center; gap: 6px; }
+  .stats { display: flex; gap: 8px; align-items: center; }
+  #orderNo { transform: skew(-6deg) rotate(1.5deg); background: var(--yellow); }
+  .hearts { display: flex; gap: 4px; }
+  .hearts svg { display: block; }
+  #soundBtn {
+    background: var(--card); border: 3px solid var(--ink); border-radius: 50%; width: 40px; height: 40px;
+    box-shadow: 3px 3px 0 var(--ink); display: grid; place-items: center; padding: 0;
+  }
+
+  .order { display: flex; gap: 14px; align-items: flex-start; margin: 0; }
+  .guest { width: 104px; flex: none; text-align: center; }
+  .guest > svg { display: block; margin: 0 auto; }
+  .guest .gname {
+    display: inline-block; margin-top: 4px; padding: 1px 6px 0;
+    font-family: var(--f-body); font-weight: bold; font-size: 14px; line-height: 1.25; white-space: nowrap;
+    background: var(--ink); color: var(--yellow); transform: skew(-8deg) rotate(-2deg);
+  }
+  .guest.arrive { animation: arrive .45s cubic-bezier(.3,1.4,.5,1); }
+  @keyframes arrive { from { transform: translateX(-80px) rotate(-12deg); opacity: 0; } }
+  .guest.leave { animation: leave .4s ease-in forwards; }
+  @keyframes leave { to { transform: translateX(110px) rotate(14deg); opacity: 0; } }
+  .patience {
+    position: relative; height: 13px; margin: 5px 2px 0; overflow: hidden;
+    background: #fff; border: 2.5px solid var(--ink); border-radius: 2px; box-shadow: 2px 2px 0 var(--ink);
+  }
+  .patience::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: repeating-linear-gradient(-55deg, transparent 0 6px, rgba(0,0,0,.22) 6px 8px);
+  }
+  .patience i { display: block; height: 100%; width: 100%; background: var(--good); transition: width .1s linear, background .3s; }
+
+  .bubble {
+    flex: 1; position: relative; min-height: 96px; padding: 10px 12px 9px 14px;
+    background: var(--card); border: 3.5px solid var(--ink);
+    border-radius: 28px 34px 26px 30px / 26px 24px 30px 28px;
+    box-shadow: 3px 3px 0 rgba(20,20,20,.9);
+  }
+  /* хвостик пузыря к гостю */
+  .bubble::before {
+    content: ""; position: absolute; left: -24px; top: 26px; width: 30px; height: 26px;
+    background: var(--ink); clip-path: polygon(0 74%, 100% 0, 100% 100%);
+  }
+  .bubble::after {
+    content: ""; position: absolute; left: -16px; top: 31.5px; width: 25px; height: 15px;
+    background: var(--card); clip-path: polygon(0 76%, 100% 0, 100% 100%);
+  }
+  .bubble .say { font-family: var(--f-head); font-size: 17px; line-height: 1.15; text-transform: uppercase; margin-bottom: 5px; }
+  .need { display: flex; flex-wrap: wrap; gap: 4px 6px; }
+  .need .it {
+    display: flex; align-items: center; gap: 1px; padding: 1px 5px 1px 3px;
+    font-family: var(--f-head); font-size: 19px;
+    border: 2.5px solid transparent; border-radius: 6px; transition: background .2s;
+  }
+  .need .it svg { flex: none; }
+  .need .it.ok { background: radial-gradient(circle, rgba(255,255,255,.45) 0 1.3px, transparent 1.8px) 0 0 / 6px 6px, #6fe07f; border-color: var(--ink); }
+  .need .it.over { background: radial-gradient(circle, rgba(255,255,255,.4) 0 1.3px, transparent 1.8px) 0 0 / 6px 6px, #ff7b7b; border-color: var(--ink); }
+  .need .no { position: relative; width: 40px; height: 40px; }
+  .need .ban-lbl { font-family: var(--f-head); font-size: 14px; text-transform: uppercase; color: var(--bad); margin-right: 2px; }
+
+  .kitchen { position: relative; display: flex; align-items: flex-end; margin-top: 0; }
+  .kitchen .cat { width: 118px; flex: none; margin-right: -20px; z-index: 2; position: relative; }
+  .kitchen .cat svg { display: block; width: 100%; height: auto; }
+  .cat .spoon { transform-origin: 150px 150px; animation: stir .6s ease-in-out infinite alternate; }
+  @keyframes stir { from { transform: rotate(-10deg); } to { transform: rotate(10deg); } }
+  .pot { position: relative; flex: 1; }
+  .pot .vessel { display: block; }
+  .pot .vessel svg { display: block; }
+  .contents {
+    position: absolute; left: 14%; right: 14%; bottom: 66%; z-index: 1;
+    display: flex; flex-wrap: wrap-reverse; justify-content: center; align-content: flex-start; gap: 0 2px;
+  }
+  .contents button { background: none; padding: 0; margin: 0 -3px -10px; animation: drop .3s ease; }
+  .contents button svg { display: block; }
+  @keyframes drop { from { transform: translateY(-30px) scale(1.3); opacity: 0; } }
+  .pot.splash .vessel { animation: shake .35s; }
+  @keyframes shake { 25% { transform: rotate(-2deg); } 75% { transform: rotate(2deg); } }
+  /* «ПЛЮХ!» при каждом броске */
+  .pot::after {
+    content: "ПЛЮХ!"; position: absolute; right: -2px; top: -22px; z-index: 3; pointer-events: none;
+    font-family: var(--f-title); font-size: 14px; line-height: 1; color: #fff;
+    -webkit-text-stroke: 1.3px var(--ink); paint-order: stroke fill; text-shadow: 2px 2px 0 var(--ink);
+    background: var(--burst-c) center / 100% 100% no-repeat; padding: 16px 14px 15px 12px;
+    opacity: 0; transform: scale(.3) rotate(14deg);
+  }
+  .pot.splash::after { animation: pow .7s ease-out; }
+  @keyframes pow { 0% { opacity: 0; transform: scale(.3) rotate(14deg); } 25% { opacity: 1; transform: scale(1.15) rotate(8deg); } 75% { opacity: 1; transform: scale(1) rotate(8deg); } 100% { opacity: 0; transform: scale(1.1) rotate(8deg); } }
+  .bubbles circle { animation: boil 1.4s ease-in infinite; }
+  .bubbles circle:nth-child(2) { animation-delay: .5s; }
+  .bubbles circle:nth-child(3) { animation-delay: .9s; }
+  @keyframes boil { from { transform: translateY(0); opacity: .9; } to { transform: translateY(-26px); opacity: 0; } }
+  /* подпись-«плашка рассказчика» */
+  .hint {
+    position: relative; z-index: 3; margin: 6px 4px 0 auto; width: fit-content; max-width: 96%; min-height: 0;
+    font-family: var(--f-body); font-weight: bold; font-size: 15px; line-height: 1.2; text-align: left;
+    background: var(--yellow); border: 2.5px solid var(--ink); padding: 3px 8px 2px; box-shadow: 2px 2px 0 var(--ink);
+  }
+  .hint:empty { visibility: hidden; }
+
+  .shelf {
+    position: relative; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px 8px; margin-top: 16px;
+    padding: 14px 10px 12px;
+    background: radial-gradient(circle, rgba(0,0,0,.28) 0 1.6px, transparent 2.1px) 0 0 / 8px 8px, var(--blue);
+    border: 4px solid var(--ink); border-radius: 3px; box-shadow: 6px 6px 0 var(--ink);
+    transform: rotate(-.5deg);
+  }
+  .shelf::before {
+    content: "ХРУМ!"; position: absolute; right: -12px; top: -26px; z-index: 2; pointer-events: none;
+    font-family: var(--f-title); font-size: 13px; line-height: 1; color: var(--red);
+    -webkit-text-stroke: 1.2px var(--ink); paint-order: stroke fill; text-shadow: 1.5px 1.5px 0 var(--ink);
+    background: var(--burst-y) center / 100% 100% no-repeat; padding: 15px 13px 14px 11px; transform: rotate(12deg);
+  }
+  .shelf button {
+    display: flex; flex-direction: column; align-items: center; padding: 5px 2px 3px;
+    background: var(--card); border: 3px solid var(--ink); border-radius: 3px; box-shadow: 3px 3px 0 var(--ink);
+    font-family: var(--f-body); font-weight: bold; font-size: 14px; line-height: 1.2;
+    transform: rotate(-1.5deg); transition: transform .08s, box-shadow .08s;
+  }
+  .shelf button:nth-child(even) { transform: rotate(1.4deg); background: var(--paper); }
+  .shelf button svg { margin-bottom: 1px; }
+  .shelf button:active { transform: translate(2px, 2px) scale(.96); box-shadow: 1px 1px 0 var(--ink); }
+  .actions { display: grid; grid-template-columns: 1fr 1.4fr; gap: 14px; }
+  .actions .big { margin: 18px 0 0; }
+  .serve {
+    color: var(--yellow); text-shadow: 2px 2px 0 var(--ink); -webkit-text-stroke: .6px var(--ink);
+    background: radial-gradient(circle, rgba(255,255,255,.28) 0 1.6px, transparent 2.1px) 0 0 / 8px 8px, var(--red) !important;
+    font-size: 24px !important;
+  }
+
+  .flyer { position: fixed; z-index: 50; pointer-events: none; }
+
+  /* ---- всплывающее окно-взрыв ---- */
+  .toast {
+    position: fixed; left: 50%; top: 40%; z-index: 60;
+    transform: translate(-50%, -50%) scale(.5) rotate(-8deg);
+    width: min(86vw, 380px); padding: 30px 20px 18px; text-align: center; font-size: 20px;
+    background: radial-gradient(circle, rgba(0,168,232,.22) 0 1.8px, transparent 2.3px) 0 0 / 9px 9px, var(--card);
+    border: 5px solid var(--ink); border-radius: 4px; box-shadow: 9px 9px 0 var(--ink);
+    opacity: 0; pointer-events: none; transition: opacity .15s, transform .28s cubic-bezier(.3,1.7,.5,1);
+  }
+  .toast.on { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(-2deg); pointer-events: auto; }
+  .toast::before {
+    position: absolute; left: -22px; top: -46px; transform: rotate(-14deg);
+    font-family: var(--f-title); font-size: 22px; line-height: 1;
+    -webkit-text-stroke: 1.8px var(--ink); paint-order: stroke fill; text-shadow: 2.5px 2.5px 0 var(--ink);
+    background: center / 100% 100% no-repeat; padding: 24px 22px 23px 19px;
+  }
+  .toast.good::before { content: "БАМ!"; color: var(--red); background-image: var(--burst-y); }
+  .toast.bad::before { content: "БАЦ!"; color: var(--yellow); background-image: var(--burst-r); }
+  .toast.good { background: radial-gradient(circle, rgba(232,33,43,.18) 0 1.8px, transparent 2.3px) 0 0 / 9px 9px, #fff6b8; }
+  .toast b {
+    display: block; margin-bottom: 8px;
+    font-family: var(--f-title); font-weight: normal; font-size: 25px; line-height: 1.1; text-transform: uppercase;
+    -webkit-text-stroke: 2px var(--ink); paint-order: stroke fill; text-shadow: 3px 3px 0 var(--ink);
+  }
+  .toast.good b { color: var(--good); }
+  .toast.bad b { color: var(--bad); }
+  .toast .small { font-size: 19px; line-height: 1.35; }
+  .toast .rank { margin-top: 8px; }
+
+  /* ---- Конец ---- */
+  #over { text-align: center; position: relative; }
+  #over h2 {
+    display: inline-block; margin: 26px 0 0; padding: 10px 16px 8px;
+    font-family: var(--f-title); font-weight: normal; font-size: 26px; line-height: 1.1; text-transform: uppercase;
+    color: var(--yellow); -webkit-text-stroke: 2.4px var(--ink); paint-order: stroke fill; text-shadow: 3px 3px 0 var(--ink);
+    background: radial-gradient(circle, rgba(255,255,255,.25) 0 1.6px, transparent 2.1px) 0 0 / 8px 8px, var(--red);
+    border: 4px solid var(--ink); box-shadow: 6px 6px 0 var(--ink); transform: rotate(-3deg) skew(-6deg);
+  }
+  #overCat { position: relative; display: flex; justify-content: center; margin: 22px 0 4px; }
+  #over .fx { left: 18px; top: 150px; transform: rotate(-12deg); }
+  #over .res {
+    font-size: 22px; line-height: 1.55; margin: 12px 0; padding: 12px 14px;
+    background: var(--paper); border: 4px solid var(--ink); box-shadow: 6px 6px 0 var(--ink); transform: rotate(.8deg);
+  }
+  #over .res b { font-family: var(--f-head); font-weight: normal; font-size: 24px; color: var(--red); }
+  .rank {
+    display: inline-block; padding: 4px 14px 3px; font-family: var(--f-head); font-weight: normal; font-size: 18px; text-transform: uppercase;
+    background: var(--yellow); color: var(--ink); border: 3px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); transform: skew(-8deg) rotate(-1deg);
+  }
+
+  /* у Rubik Mono One очень широкий пробел — поджимаем */
+  #menu h1, .toast b, #over h2, .fx, .toast::before { word-spacing: -.38em; }
+
+  .confetti {
+    position: fixed; top: -20px; width: 16px; height: 16px; z-index: 55; pointer-events: none; animation: fall 1.4s ease-in forwards;
+    clip-path: polygon(50% 0%,62.9% 32.2%,97.6% 34.5%,70.9% 56.8%,79.4% 90.5%,50% 72%,20.6% 90.5%,29.1% 56.8%,2.4% 34.5%,37.1% 32.2%);
+  }
+  @keyframes fall { to { transform: translateY(105vh) rotate(540deg); } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<section class="screen on" id="menu">
+  <div class="title"><h1>Кот-повар</h1><span class="tag">Выпуск №1 · Кухня героев</span></div>
+  <div class="panel p-hero"><div class="pf"><div class="pi">
+    <span class="fx v">ВЖУХ!</span><span class="fx h c">НЯМ!</span>
+    <div class="hero"><div class="cat" id="menuCat"></div><div id="menuGuest"></div></div>
+  </div></div></div>
+  <p class="lead">Гости приходят голодные и заказывают блюда. Положи в кастрюлю <b>ровно то, что просят</b> — не больше и не меньше!</p>
+  <button class="big go" data-mode="timed">На время<small>Гость ждёт недолго, ошибаться можно 3 раза</small></button>
+  <button class="big calm" data-mode="calm">Спокойно<small>Без таймера, ошибки можно исправить</small></button>
+  <div class="record" id="record"></div>
+</section>
+
+<section class="screen" id="game">
+  <div class="topbar">
+    <button class="back" id="toMenu">← Меню</button>
+    <span class="pill" id="orderNo">Заказ №1</span>
+    <div class="stats">
+      <span class="pill" id="coins"></span>
+      <button id="soundBtn" aria-label="Звук"></button>
+    </div>
+  </div>
+  <div class="hearts" id="hearts" style="justify-content:center;margin-top:8px"></div>
+
+  <div class="panel p-order"><div class="pf"><div class="pi">
+  <div class="order">
+    <div class="guest" id="guest"></div>
+    <div class="bubble">
+      <div class="say" id="say"></div>
+      <div class="need" id="need"></div>
+    </div>
+  </div>
+  </div></div></div>
+
+  <div class="panel p-kitchen"><div class="pf"><div class="pi">
+  <div class="kitchen">
+    <div class="cat" id="cookCat"></div>
+    <div class="pot" id="pot"><div class="vessel" id="vessel"></div><div class="contents" id="contents"></div></div>
+  </div>
+  <div class="hint" id="hint">Нажимай на продукты на полке</div>
+  </div></div></div>
+
+  <div class="shelf" id="shelf"></div>
+  <div class="actions">
+    <button class="big" id="pourBtn">Вылить</button>
+    <button class="big serve" id="serveBtn">Подать!</button>
+  </div>
+</section>
+
+<section class="screen" id="over">
+  <h2>Смена окончена!</h2>
+  <span class="fx r">ДЗЫНЬ!</span>
+  <div id="overCat"></div>
+  <div class="res" id="overRes"></div>
+  <button class="big go" id="againBtn">Ещё смену</button>
+  <button class="big" id="overMenu">В меню</button>
+</section>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="art.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+const rnd = (n) => Math.floor(Math.random() * n);
+const pick = (a) => a[rnd(a.length)];
+const shuffle = (a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+};
+const RANKS = ['Поварёнок', 'Помощник повара', 'Повар', 'Шеф-повар', 'Главный шеф', 'Кот-легенда'];
+const rankOf = (served) => RANKS[Math.min(RANKS.length - 1, Math.floor(served / 5))];
+
+// ---------- Звук (короткие пиканья, без файлов) ----------
+let actx = null, soundOn = store.get('catchef.sound', true);
+function tone(freq, dur, type = 'sine', delay = 0, vol = 0.15) {
+  if (!soundOn) return;
+  try {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    const t = actx.currentTime + delay, o = actx.createOscillator(), g = actx.createGain();
+    o.type = type; o.frequency.setValueAtTime(freq, t);
+    g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    o.connect(g); g.connect(actx.destination); o.start(t); o.stop(t + dur);
+  } catch {}
+}
+const sfx = {
+  plop() { tone(320, .12, 'sine'); tone(620, .1, 'sine', .05, .1); },
+  out() { tone(500, .1, 'triangle'); tone(260, .12, 'triangle', .06, .1); },
+  pour() { for (let i = 0; i < 5; i++) tone(700 - i * 90, .1, 'triangle', i * .05, .08); },
+  win() { [523, 659, 784, 1046].forEach((f, i) => tone(f, .18, 'triangle', i * .09)); },
+  fail() { tone(220, .25, 'sawtooth', 0, .08); tone(165, .35, 'sawtooth', .18, .08); },
+  tick() { tone(900, .05, 'square', 0, .04); },
+};
+function drawSound() { $('soundBtn').innerHTML = ICON.sound(soundOn); }
+$('soundBtn').onclick = () => { soundOn = !soundOn; store.set('catchef.sound', soundOn); drawSound(); };
+
+// ---------- Экраны ----------
+function show(id) { document.querySelectorAll('.screen').forEach(s => s.classList.toggle('on', s.id === id)); }
+function drawMenu() {
+  $('menuCat').innerHTML = catSvg('happy', 150);
+  $('menuGuest').innerHTML = guestSvg(pick(GUESTS), 'happy', 100);
+  const best = store.get('catchef.best', 0);
+  $('record').innerHTML = best ? `Рекорд «На время»: ${best} заказов · звание «${rankOf(best)}»` : '';
+  show('menu');
+}
+
+// ---------- Игра ----------
+let S = null; // состояние смены
+let timer = null;
+
+function startShift(mode) {
+  S = { mode, n: 0, coins: 0, hearts: 3, served: 0, lastGuest: null };
+  drawSound();
+  show('game');
+  nextOrder();
+}
+
+function makeOrder(n) {
+  const fruit = n > 1 && Math.random() < 0.3;
+  const pool = Object.keys(FOOD).filter(id => FOOD[id].kind === (fruit ? 'fruit' : 'veg'));
+  const types = Math.min(1 + Math.ceil(n / 2), fruit ? 4 : 5);
+  const maxQ = n < 3 ? 1 : n < 6 ? 2 : 3;
+  const chosen = shuffle(pool).slice(0, types);
+  const need = {};
+  chosen.forEach(id => need[id] = 1 + rnd(maxQ));
+  let dish, bowl = false;
+  if (fruit) { dish = pick(['компот', 'фруктовый салат', 'варенье']); bowl = dish === 'фруктовый салат'; }
+  else if (need.beet) dish = 'борщ';
+  else { dish = pick(['суп', 'салат', 'рагу', 'щи']); bowl = dish === 'салат'; }
+  const others = shuffle(Object.keys(FOOD).filter(id => !need[id]));
+  let ban = null;
+  if (n >= 4 && Math.random() < 0.6) ban = others.shift();
+  const shelfSize = Math.min(4 + Math.floor(n / 2), 12);
+  const shelf = Object.keys(need);
+  if (ban) shelf.push(ban);
+  while (shelf.length < shelfSize && others.length) shelf.push(others.shift());
+  const total = Object.values(need).reduce((a, b) => a + b, 0);
+  const time = Math.max(12, 30 - n) + total * 1.5;
+  let g; do { g = pick(GUESTS); } while (g === S.lastGuest);
+  S.lastGuest = g;
+  return { need, ban, dish, bowl, shelf: shuffle(shelf), time, guest: g };
+}
+
+function nextOrder() {
+  S.n++;
+  S.order = makeOrder(S.n);
+  S.pot = [];
+  S.left = S.order.time;
+  S.busy = false;
+  const o = S.order;
+  $('orderNo').textContent = `Заказ №${S.n}`;
+  $('say').textContent = `${o.bowl ? 'Приготовь' : 'Свари'} мне ${o.dish}!`;
+  $('vessel').innerHTML = o.bowl ? bowlSvg() : potSvg(o.dish === 'борщ' ? '#d0405f' : o.dish === 'компот' || o.dish === 'варенье' ? '#f08aa0' : '#f6c35b');
+  $('contents').style.bottom = o.bowl ? '60%' : '66%';
+  $('cookCat').innerHTML = catSvg('cook', 96);
+  $('shelf').innerHTML = '';
+  o.shelf.forEach(id => {
+    const b = document.createElement('button');
+    b.innerHTML = foodSvg(id, 52) + `<span>${FOOD[id].name}</span>`;
+    b.onclick = () => addFood(id, b);
+    $('shelf').appendChild(b);
+  });
+  $('hint').textContent = S.n === 1 ? 'Нажимай на продукты на полке' : '';
+  drawGuest('calm', true);
+  drawNeed(); drawPot(); drawStats();
+  clearInterval(timer);
+  if (S.mode === 'timed') {
+    $('guest').querySelector('.patience').style.display = '';
+    timer = setInterval(tickTime, 100);
+  }
+}
+
+function drawGuest(mood, arrive) {
+  const g = S.order.guest, el = $('guest');
+  const bar = S.mode === 'timed' ? `<div class="patience"><i></i></div>` : '';
+  el.innerHTML = guestSvg(g, mood, 104) + `<div class="gname">${g.name}</div>` + bar;
+  el.classList.remove('arrive', 'leave');
+  if (arrive) { void el.offsetWidth; el.classList.add('arrive'); }
+  S.mood = mood;
+  updateBar();
+}
+function updateBar() {
+  const i = $('guest').querySelector('.patience i');
+  if (!i) return;
+  const k = Math.max(0, S.left / S.order.time);
+  i.style.width = (k * 100) + '%';
+  i.style.background = k > .5 ? 'var(--good)' : k > .25 ? '#f0b429' : 'var(--bad)';
+}
+function tickTime() {
+  if (S.busy) return;
+  S.left -= 0.1;
+  const k = S.left / S.order.time;
+  const mood = k > .5 ? 'calm' : k > .25 ? 'worried' : 'angry';
+  if (mood !== S.mood) drawGuest(mood);
+  else updateBar();
+  if (k < .25 && Math.round(S.left * 10) % 10 === 0) sfx.tick();
+  if (S.left <= 0) {
+    clearInterval(timer);
+    failOrder('Гость ушёл голодным!', 'Не успели приготовить вовремя.');
+  }
+}
+
+function counts() { const c = {}; S.pot.forEach(id => c[id] = (c[id] || 0) + 1); return c; }
+
+function drawNeed() {
+  const o = S.order, c = counts();
+  let h = Object.entries(o.need).map(([id, q]) => {
+    const have = c[id] || 0;
+    const cls = have === q ? 'ok' : have > q ? 'over' : '';
+    return `<span class="it ${cls}">${foodSvg(id, 38)}×${q}</span>`;
+  }).join('');
+  if (o.ban) h += `<span class="it ${c[o.ban] ? 'over' : ''}"><span class="ban-lbl">без</span><span class="no">${foodSvg(o.ban, 40)}${ICON.ban}</span></span>`;
+  $('need').innerHTML = h;
+}
+function drawPot() {
+  const box = $('contents');
+  box.innerHTML = '';
+  const size = S.pot.length > 10 ? 30 : 38;
+  S.pot.forEach((id, idx) => {
+    const b = document.createElement('button');
+    b.innerHTML = foodSvg(id, size);
+    b.style.animation = idx === S.pot.length - 1 && S.justAdded ? '' : 'none';
+    b.onclick = () => { if (S.busy) return; S.pot.splice(idx, 1); S.justAdded = false; sfx.out(); drawPot(); drawNeed(); };
+    box.appendChild(b);
+  });
+  S.justAdded = false;
+}
+function drawStats() {
+  $('coins').innerHTML = ICON.coin() + ' ' + S.coins;
+  $('hearts').innerHTML = S.mode === 'timed' ? [0, 1, 2].map(i => ICON.heart(i < S.hearts)).join('') : '';
+  $('hearts').style.display = S.mode === 'timed' ? 'flex' : 'none';
+}
+
+function addFood(id, btn) {
+  if (S.busy) return;
+  if (S.pot.length >= 16) { $('hint').textContent = 'Кастрюля полная!'; return; }
+  sfx.plop();
+  // летящий продукт
+  const from = btn.getBoundingClientRect(), to = $('pot').getBoundingClientRect();
+  const f = document.createElement('div');
+  f.className = 'flyer'; f.innerHTML = foodSvg(id, 52);
+  f.style.left = from.left + from.width / 2 - 26 + 'px'; f.style.top = from.top + 4 + 'px';
+  document.body.appendChild(f);
+  const dx = to.left + to.width / 2 - (from.left + from.width / 2), dy = to.top + 20 - from.top;
+  const anim = f.animate([
+    { transform: 'translate(0,0) scale(1)' },
+    { transform: `translate(${dx / 2}px, ${dy - 60}px) scale(1.1) rotate(90deg)`, offset: .5 },
+    { transform: `translate(${dx}px, ${dy}px) scale(.6) rotate(200deg)` },
+  ], { duration: 380, easing: 'ease-in' });
+  anim.onfinish = () => f.remove();
+  setTimeout(() => {
+    S.pot.push(id); S.justAdded = true;
+    $('pot').classList.remove('splash'); void $('pot').offsetWidth; $('pot').classList.add('splash');
+    drawPot(); drawNeed();
+    if (S.n === 1 && S.pot.length === 1) $('hint').textContent = 'Лишнее? Нажми на продукт в кастрюле — кот его достанет';
+  }, 300);
+}
+
+$('pourBtn').onclick = () => {
+  if (S.busy || !S.pot.length) return;
+  sfx.pour(); S.pot = []; drawPot(); drawNeed();
+};
+
+function listText(obj) { return Object.entries(obj).map(([id, q]) => `${FOOD[id].name} ×${q}`).join(', '); }
+
+$('serveBtn').onclick = () => {
+  if (S.busy) return;
+  if (!S.pot.length) { $('hint').textContent = 'Кастрюля пустая — сначала положи продукты'; return; }
+  const c = counts(), o = S.order, missing = {}, extra = {};
+  for (const [id, q] of Object.entries(o.need)) if ((c[id] || 0) < q) missing[id] = q - (c[id] || 0);
+  for (const [id, q] of Object.entries(c)) if (q > (o.need[id] || 0)) extra[id] = q - (o.need[id] || 0);
+  let why = '';
+  if (Object.keys(missing).length) why += `Не хватает: ${listText(missing)}.<br>`;
+  if (Object.keys(extra).length) why += `Лишнее: ${listText(extra)}.`;
+  if (o.ban && c[o.ban]) why = `Я же просил без продукта «${FOOD[o.ban].name}»!<br>` + why;
+  if (!why) winOrder();
+  else if (S.mode === 'calm') {
+    sfx.fail(); drawGuest('worried');
+    toast('bad', 'Не совсем то…', why + '<br>Исправь и подай ещё раз!', 2600);
+  } else failOrder('Не то блюдо!', why);
+};
+
+function winOrder() {
+  S.busy = true; clearInterval(timer);
+  const types = Object.keys(S.order.need).length;
+  const bonus = S.mode === 'timed' ? Math.ceil(S.left / 2) : 0;
+  const gain = 10 + types * 2 + bonus;
+  const oldRank = rankOf(S.served);
+  S.coins += gain; S.served++;
+  sfx.win(); confetti();
+  drawGuest('happy'); $('cookCat').innerHTML = catSvg('happy', 96); drawStats();
+  const newRank = rankOf(S.served);
+  const rankMsg = newRank !== oldRank ? `<br><span class="rank">Новое звание: ${newRank}!</span>` : '';
+  toast('good', 'Вкуснятина!', `${ICON.coin()} +${gain}${bonus ? ` (из них ${bonus} — за скорость)` : ''}${rankMsg}`, rankMsg ? 2200 : 1400, leaveAndNext);
+}
+
+function failOrder(title, why) {
+  S.busy = true; clearInterval(timer);
+  S.hearts--;
+  sfx.fail();
+  drawGuest('angry'); $('cookCat').innerHTML = catSvg('sad', 96); drawStats();
+  toast('bad', title, why, 2400, () => { if (S.hearts <= 0) gameOver(); else leaveAndNext(); });
+}
+
+function leaveAndNext() {
+  $('guest').classList.add('leave');
+  setTimeout(nextOrder, 380);
+}
+
+function gameOver() {
+  const best = store.get('catchef.best', 0), isBest = S.served > best;
+  if (isBest) store.set('catchef.best', S.served);
+  $('overCat').innerHTML = catSvg(S.served ? 'happy' : 'sad', 160);
+  $('overRes').innerHTML = `Накормлено гостей: <b>${S.served}</b><br>${ICON.coin(26)} Монет: <b>${S.coins}</b><br>
+    <span class="rank">${rankOf(S.served)}</span>${isBest && S.served ? '<br>Новый рекорд!' : ''}`;
+  show('over');
+  if (isBest && S.served) confetti();
+}
+
+let toastTimer = null;
+function toast(kind, title, text, ms, then) {
+  const t = $('toast');
+  t.className = 'toast on ' + kind;
+  t.innerHTML = `<b>${title}</b><div class="small">${text}</div>`;
+  clearTimeout(toastTimer);
+  const close = () => { clearTimeout(toastTimer); t.className = 'toast'; t.onclick = null; if (then) { const f = then; then = null; f(); } };
+  t.onclick = close;
+  toastTimer = setTimeout(close, ms);
+}
+
+function confetti() {
+  const colors = ['#ff7a59', '#ffc83d', '#3fae5a', '#4d9de0', '#c86bd6'];
+  for (let i = 0; i < 40; i++) {
+    const d = document.createElement('div');
+    d.className = 'confetti';
+    d.style.left = Math.random() * 100 + 'vw';
+    d.style.background = pick(colors);
+    d.style.animationDelay = Math.random() * .4 + 's';
+    d.style.animationDuration = 1 + Math.random() * .8 + 's';
+    document.body.appendChild(d);
+    setTimeout(() => d.remove(), 2400);
+  }
+}
+
+// ---------- Кнопки ----------
+document.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => startShift(b.dataset.mode));
+$('toMenu').onclick = () => {
+  clearInterval(timer);
+  if (S && S.mode === 'timed' && S.served) gameOver(); else drawMenu();
+};
+$('againBtn').onclick = () => startShift(S.mode);
+$('overMenu').onclick = drawMenu;
+
+drawMenu();
+</script>
+</body>
+</html>
